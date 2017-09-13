@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0 (upcoming)
+## 0.2.0 (September 13, 2017)
 
 * Logger refactor
 * Improved framework finder
