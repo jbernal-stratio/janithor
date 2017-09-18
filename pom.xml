@@ -137,6 +137,34 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>2.11</version>
+                <configuration>
+                    <mapping>
+                        <java>SLASHSTAR_STYLE</java>
+                        <scala>SLASHSTAR_STYLE</scala>
+                        <ts>SLASHSTAR_STYLE</ts>
+                        <scss>JAVADOC_STYLE</scss>
+                        <R>SCRIPT_STYLE</R>
+                    </mapping>
+                    <useDefaultExcludes>true</useDefaultExcludes>
+                    <header>${license.header}</header>
+
+                    <includes>
+                        <include>**/src/**</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/.*/**</exclude>
+                        <exclude>**/_themes/stratio/**</exclude>
+                        <exclude>**/*.rst</exclude>
+                        <exclude>**/*.feature</exclude>
+                        <exclude>**/README*</exclude>
+                        <exclude>**/node*/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
