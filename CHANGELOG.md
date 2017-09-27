@@ -2,14 +2,14 @@
 
 ## 0.3.0 (upcoming)
 
-* Pending changelog
+* Aggressive unreserve based on role
 
 ## 0.2.0 (September 13, 2017)
 
 * Logger refactor
 * Improved framework finder
 
-## 0.1.1 (upcoming)
+## 0.1.1 (July 18, 2017)
 
 * Restored completed_frameworks search
 * Non-provided slf4 dependency
