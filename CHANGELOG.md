@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0 (upcoming)
+
+* Pending changelog
+
 ## 0.3.0 (upcoming)
 
 * Resource unreserve based only on role
