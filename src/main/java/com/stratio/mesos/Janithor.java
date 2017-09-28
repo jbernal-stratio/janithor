@@ -88,6 +88,9 @@ public class Janithor {
                 case "token":
                     CLI.dcosToken(url, sso[0], sso[1]);
                     break;
+                case "dracarys":
+                    CLI.unreserve(mesos, role);
+                    break;
             }
 
         } catch (ParseException e) {

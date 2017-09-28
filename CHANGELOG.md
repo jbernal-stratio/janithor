@@ -2,7 +2,7 @@
 
 ## 0.3.0 (upcoming)
 
-* Aggressive unreserve based on role
+* Resource unreserve based only on role
 
 ## 0.2.0 (September 13, 2017)
 
