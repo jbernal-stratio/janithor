@@ -27,27 +27,33 @@ The active flags allows to filter only ACTIVE frameworks. If set to false it wil
 
 Obtain token from mesos master
 ```
-java -jar janithor.jar -o token -u https://sso.paas.labs.stratio.com/login?firstUser=false -sso admin:1234
+java -jar janithor.jar -o token -u https://leader.mesos/login?firstUser=false -sso admin:1234
 ```
 
 Find framework ids
 ```
-java -jar janithor.jar -o lookup -u http://master-1.node.paas.labs.stratio.com:5050 -p kafka-principal -r kafka-sec-role -f kafka-sec -a true -t <<TOKEN>>
-```
-
-Teardown an active framework
-```
-java -jar janithor.jar -o teardown -u http://master-1.node.paas.labs.stratio.com:5050 -p kafka-principal -r kafka-sec-role -f kafka-sec -t <<TOKEN>> 
-```
-
-Unreserve resources for an inactive framework
-```
-java -jar janithor.jar -o unreserve -u http://master-1.node.paas.labs.stratio.com:5050 -p kafka-principal -r kafka-sec-role -f kafka-sec -a false -t <<TOKEN>> 
+java -jar janithor.jar -o lookup -u http://leader.mesos:5050 -p kafka-principal -r kafka-sec-role -f kafka-sec -t <<TOKEN>>
 ```
 
 List resources for an active framework
 ```
-java -jar janithor.jar -o resources -u http://master-1.node.paas.labs.stratio.com:5050 -p kafka-principal -r kafka-sec-role -f kafka-sec -t <<TOKEN>>
+java -jar janithor.jar -o resources -u http://leader.mesos:5050 -p kafka-principal -r kafka-sec-role -f kafka-sec -t <<TOKEN>>
+```
+
+Teardown an active framework
+```
+java -jar janithor.jar -o teardown -u http://leader.mesos:5050 -p kafka-principal -r kafka-sec-role -f kafka-sec -t <<TOKEN>> 
+```
+
+Unreserve resources for an inactive framework
+```
+java -jar janithor.jar -o unreserve -u http://leader.mesos:5050 -p kafka-principal -r kafka-sec-role -f kafka-sec -a false -t <<TOKEN>> 
+```
+
+Unreserve all resources just by role (use with caution)
+```
+java -jar janithor.jar -o dracarys -u http://leader.mesos:5050 -p kafka-principal -r kafka-sec-role -t <<TOKEN>>
+ 
 ```
 
 Remove exhibitor service entry
@@ -58,20 +64,7 @@ java -jar janithor.jar -o exhibitor -u https://sso.paas.labs.stratio.com -p kafk
 
 Destroy marathon service
 ```
-java -jar janithor.jar -o marathon -u https://sso.paas.labs.stratio.com -f kafka-sec -t <<TOKEN>>
-```
-
-To test this in a **minimesos** we can do the following
-
-```
-# find framework
-java -jar mesos-cleaner.jar -o resolve -u http://192.168.173.5:5050 -p kafka-principal -r kafka-sec-role -f kafka-sec -a true
-
-# list resources
-java -jar mesos-cleaner.jar -o resources -u http://192.168.173.5:5050 -p kafka-principal -r kafka-sec-role -f kafka-sec -a true
-
-# teardown & unreserve
-java -jar mesos-cleaner.jar -o unreserve -u http://192.168.173.5:5050 -p kafka-principal -r kafka-sec-role -f kafka-sec -a true
+java -jar janithor.jar -o marathon -u https://megadev.labs.stratio.com/marathon/ -f kafka-sec -t <<TOKEN>>
 ```
 
 ## Supported authentication methods

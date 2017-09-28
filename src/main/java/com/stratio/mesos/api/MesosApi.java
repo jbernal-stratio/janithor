@@ -22,7 +22,11 @@ import retrofit2.Response;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Created by alonso on 20/06/17.
@@ -89,7 +93,13 @@ public class MesosApi {
             Response<ResponseBody> response = mesosCall.clone().execute();
             LOG.info("findResourcesFor " + response.message());
             if (response.code() == HTTPUtils.HTTP_OK_CODE) {
-                JsonQuery q = JsonQuery.compile(".slaves[]|.id=\""+slaveId+"\"|.reserved_resources_full.\""+role+"\"[]?");
+                JsonQuery q;
+                if (slaveId!=null) {
+                    q = JsonQuery.compile(".slaves[]|.id=\""+slaveId+"\"|.reserved_resources_full.\""+role+"\"[]?");
+                } else {
+                    q = JsonQuery.compile(".slaves[]|.reserved_resources_full.\""+role+"\"[]?");
+                }
+
                 JsonNode in = MAPPER.readTree(new String(response.body().bytes()));
                 List<JsonNode> resources = q.apply(in);
 
@@ -310,6 +320,44 @@ public class MesosApi {
         } finally {
             return slaveIds;
         }
+    }
+
+    /**
+     * Returns all available slaves ids
+     * @return Optional list of slaveIds
+     */
+    public Optional<String[]> findAllSlaves() {
+        Call<ResponseBody> mesosCall;
+        Optional<String[]> slaveIds = Optional.empty();
+
+        try {
+            if (!hasEndpointPrefix()) mesosCall = mesosInterface.findFrameworks();
+            else mesosCall = mesosInterface.findFrameworks(getEndpointsPrefix());
+
+            Response<ResponseBody> response = mesosCall.clone().execute();
+            LOG.info("findAllSlaves " + response.message());
+            if (response.code() == HTTPUtils.HTTP_OK_CODE) {
+                JsonQuery q = JsonQuery.compile(".frameworks[].tasks[].slave_id");
+                JsonNode in = MAPPER.readTree(new String(response.body().bytes()));
+                List<JsonNode> slaves = q.apply(in);
+                slaveIds = Optional.of(slaves.stream()
+                        .map(slave->slave.toString().replace("\"", ""))
+                        .filter(distinctByKey(p -> p.toString()))
+                        .toArray(String[]::new));
+            } else {
+                LOG.info("Error finding all slaves. Returned {} - {}", response.code(), response.errorBody());
+            }
+        } catch (Exception e) {
+            LOG.info("findSlavesForFramework failure with message " + e.getMessage());
+        } finally {
+            return slaveIds;
+        }
+    }
+
+    private static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor)
+    {
+        Map<Object, Boolean> map = new ConcurrentHashMap<>();
+        return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 
     public void setMesosInterface(MesosInterface mesosInterface) {

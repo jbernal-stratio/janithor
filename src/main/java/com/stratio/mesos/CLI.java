@@ -42,6 +42,18 @@ public class CLI {
                 });
     }
 
+    // mesos resources unreserve just by role
+    public static void unreserve(MesosApi mesos, String role) {
+        String[] slaveIds = mesos.findAllSlaves().orElse(new String[]{});
+        for (String slaveId : slaveIds) {
+            println("\nResources on slave " + slaveId);
+            String[] resources = mesos.findResourcesFor(role, slaveId);
+            for (String resource : resources) {
+                mesos.unreserveResourceFor(slaveId, resource);
+            }
+        }
+    }
+
     // Mesos framework teardown
     public static void teardown(MesosApi mesos, String principal, String role, String serviceName, boolean active) {
         if (role==null) {
