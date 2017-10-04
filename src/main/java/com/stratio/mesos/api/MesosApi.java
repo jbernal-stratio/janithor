@@ -14,8 +14,7 @@ import com.stratio.mesos.http.HTTPUtils;
 import com.stratio.mesos.http.MesosInterface;
 import net.thisptr.jackson.jq.JsonQuery;
 import okhttp3.ResponseBody;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -32,7 +31,7 @@ import java.util.function.Predicate;
  * Created by alonso on 20/06/17.
  */
 public class MesosApi {
-    private static final Logger LOG = LoggerFactory.getLogger(MesosApi.class);
+    final static Logger LOG = Logger.getLogger(MesosApi.class);
 
     private ObjectMapper MAPPER = new ObjectMapper();
     private String endpointsPrefix = EndpointPrefix.EMPTY.toString();
@@ -142,10 +141,10 @@ public class MesosApi {
 
                 Response<ResponseBody> execute = mesosCall.clone().execute();
                 code = execute.code();
-                LOG.info("Unregister standard resource returned {}", code);
+                LOG.info("Unreserve standard resource returned " + code);
             } else {
                 code = unreserveVolumesFor(slaveId, resourceJson);
-                LOG.info("Unregister volume resource returned {}", code);
+                LOG.info("Unregister volume resource returned " + code);
             }
 
             System.out.println(code);
@@ -268,9 +267,9 @@ public class MesosApi {
                             .toArray(String[]::new)
                     );
                 } else if (json.size()==0) {
-                    LOG.error("No frameworks found for ({}, {}, {})", serviceName, role, principal);
+                    LOG.error("No frameworks found for (" + serviceName + "," + role + "," + principal + ")");
                 } else {
-                    LOG.error("Several frameworks found for the same ({}, {}, {})", serviceName, role, principal);
+                    LOG.error("Several frameworks found for the same (" + serviceName + "," + role + "," + principal + ")");
                 }
             } else {
                 LOG.info("Error finding framework ("+serviceName+","+role+","+principal+"): " + response
@@ -313,7 +312,7 @@ public class MesosApi {
                         .map(slave->slave.toString().replace("\"", ""))
                         .toArray(String[]::new));
             } else {
-                LOG.info("Error finding slaves for framework ({}) returned {} - {}", frameworkId, response.code(), response.errorBody());
+                LOG.info("Error finding slaves for framework ("+frameworkId+") returned "+response.code()+" - " + response.errorBody());
             }
         } catch (Exception e) {
             LOG.info("findSlavesForFramework failure with message " + e.getMessage());
@@ -345,7 +344,7 @@ public class MesosApi {
                         .filter(distinctByKey(p -> p.toString()))
                         .toArray(String[]::new));
             } else {
-                LOG.info("Error finding all slaves. Returned {} - {}", response.code(), response.errorBody());
+                LOG.info("Error finding all slaves. Returned " + response.code() + " - " + response.errorBody());
             }
         } catch (Exception e) {
             LOG.info("findSlavesForFramework failure with message " + e.getMessage());

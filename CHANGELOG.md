@@ -6,8 +6,9 @@
 
 ## 0.3.0 (October 04, 2017)
 
-* Resource unreserve based only on role
 * FRAM-687 removed duplicates on resource search
+* Resource unreserve based only on role
+* Changed logging system due to incompatibilities with other frameworks
 
 ## 0.2.0 (September 13, 2017)
 

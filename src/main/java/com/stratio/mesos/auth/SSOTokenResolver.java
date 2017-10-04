@@ -11,17 +11,16 @@ package com.stratio.mesos.auth;
 import com.stratio.mesos.http.CookieInterceptor;
 import com.stratio.mesos.http.HTTPUtils;
 import okhttp3.*;
+import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.StringJoiner;
 
 public class SSOTokenResolver {
-    private Logger log = LoggerFactory.getLogger(SSOTokenResolver.class);
+    final static Logger log = Logger.getLogger(SSOTokenResolver.class);
 
     private OkHttpClient.Builder clientBuilder;
     private OkHttpClient clientHttp;
