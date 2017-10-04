@@ -4,7 +4,7 @@
 
 * Pending changelog
 
-## 0.3.0 (upcoming)
+## 0.3.0 (October 04, 2017)
 
 * Resource unreserve based only on role
 
