@@ -95,7 +95,7 @@ public class MesosApi {
             if (response.code() == HTTPUtils.HTTP_OK_CODE) {
                 JsonQuery q;
                 if (slaveId!=null) {
-                    q = JsonQuery.compile(".slaves[]|.id=\""+slaveId+"\"|.reserved_resources_full.\""+role+"\"[]?");
+                    q = JsonQuery.compile(".slaves[]|select(.id==\""+slaveId+"\")|.reserved_resources_full.\""+role+"\"[]?");
                 } else {
                     q = JsonQuery.compile(".slaves[]|.reserved_resources_full.\""+role+"\"[]?");
                 }
