@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.0 (upcoming)
+## 0.3.0 (October 04, 2017)
 
 * FRAM-687 removed duplicates on resource search
 * Resource unreserve based only on role
