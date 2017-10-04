@@ -12,8 +12,7 @@ import com.stratio.mesos.auth.SSOTokenResolver;
 import com.stratio.mesos.http.HTTPUtils;
 import com.stratio.mesos.http.MarathonInterface;
 import okhttp3.ResponseBody;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -23,7 +22,7 @@ import java.io.IOException;
  * Created by alonso on 29/06/17.
  */
 public class MarathonApi {
-    private static final Logger LOG = LoggerFactory.getLogger(MarathonApi.class);
+    final static Logger LOG = Logger.getLogger(MarathonApi.class);
 
     private MarathonInterface marathonInterface;
 
