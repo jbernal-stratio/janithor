@@ -1,0 +1,15 @@
+masters:
+  - http://10.200.1.244:5050
+  - http://10.200.1.30:5050
+  - http://10.200.1.236:5050
+exhibitor:
+  url: http://10.200.1.244:8181
+  prefix: dcos-service-
+marathon:
+  url: https://newcore.labs.stratio.com/marathon/
+  user: admin
+  pass: 1234
+vault:
+  url: https://10.200.1.183:8200/v1
+  token:
+  secrets-path: /mesos

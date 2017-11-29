@@ -10,6 +10,8 @@ package com.stratio.mesos.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stratio.mesos.api.framework.MesosFramework;
+import com.stratio.mesos.api.framework.MesosTask;
 import com.stratio.mesos.http.HTTPUtils;
 import com.stratio.mesos.http.MesosInterface;
 import net.thisptr.jackson.jq.JsonQuery;
@@ -26,6 +28,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Created by alonso on 20/06/17.
@@ -350,6 +353,95 @@ public class MesosApi {
             LOG.info("findSlavesForFramework failure with message " + e.getMessage());
         } finally {
             return slaveIds;
+        }
+    }
+
+    /**
+     * Finds the leader of the cluster
+     * @return mesos master "host:port"
+     */
+    public Optional<String> findMesosMaster() {
+        Call<ResponseBody> mesosCall;
+        Optional<String> mesosMaster = Optional.empty();
+
+        try {
+            mesosCall = mesosInterface.state();
+
+            Response<ResponseBody> response = mesosCall.clone().execute();
+            LOG.info("findMesosMaster " + response.message());
+            if (response.code() == HTTPUtils.HTTP_OK_CODE) {
+                JsonQuery q = JsonQuery.compile(".leader_info | \"\\(.hostname):\\(.port)\"");
+                JsonNode in = MAPPER.readTree(new String(response.body().bytes()));
+                List<JsonNode> hostNode = q.apply(in);
+                mesosMaster = hostNode.stream()
+                        .map(slave->slave.toString().replace("\"", ""))
+                        .findFirst();
+            } else {
+                LOG.info("Error finding mesos master. Returned " + response.code() + " - " + response.errorBody());
+            }
+        } catch (Exception e) {
+            LOG.info("findMesosMaster failure with message " + e.getMessage());
+        } finally {
+            return mesosMaster;
+        }
+    }
+
+    /**
+     * Returns a list of frameworks by activation status
+     * @param active find active or inactive framework
+     * @return list of frameworks found
+     */
+    public Optional<List<MesosFramework>> findFrameworks(boolean active) {
+        Call<ResponseBody> mesosCall;
+        Optional<List<MesosFramework>> frameworks = Optional.empty();
+
+        try {
+            mesosCall = mesosInterface.state();
+
+            Response<ResponseBody> response = mesosCall.clone().execute();
+            LOG.info("findFrameworks " + response.message());
+            if (response.code() == HTTPUtils.HTTP_OK_CODE) {
+                JsonQuery q = JsonQuery.compile(".frameworks[] | select(.active=="+active+") | \"\\(.active):\\(.id):\\(.name):\\(.role):\\(.principal)\"");
+                JsonNode in = MAPPER.readTree(new String(response.body().bytes()));
+                List<JsonNode> lstFrameworks = q.apply(in);
+                frameworks = Optional.of(lstFrameworks.stream()
+                        .map(list -> list.toString().replace("\"", ""))
+                        .map(fwk -> new MesosFramework(fwk))
+                        .collect(Collectors.toList()));
+            } else {
+                LOG.info("Error finding frameworks. Returned " + response.code() + " - " + response.errorBody());
+            }
+        } catch (Exception e) {
+            LOG.info("findFrameworks failure with message " + e.getMessage());
+        } finally {
+            return frameworks;
+        }
+    }
+
+    public Optional<List<MesosTask>> findTasksFor(String frameworkId) {
+        Call<ResponseBody> mesosCall;
+        Optional<List<MesosTask>> tasks = Optional.empty();
+
+        try {
+            mesosCall = mesosInterface.state();
+
+            Response<ResponseBody> response = mesosCall.clone().execute();
+            LOG.info("findTasksFor " + response.message());
+            if (response.code() == HTTPUtils.HTTP_OK_CODE) {
+                JsonQuery q = JsonQuery.compile(".frameworks[] | select(.id==\""+frameworkId+"\") | .tasks[] | \"\\(.id):\\(.name):\\(.state):\\(.slave_id)\"");
+                JsonNode in = MAPPER.readTree(new String(response.body().bytes()));
+                List<JsonNode> lstFrameworks = q.apply(in);
+                tasks = Optional.of(lstFrameworks.stream()
+                        .map(list -> list.toString().replace("\"", ""))
+                        .map(fwk -> new MesosTask(fwk))
+                        .collect(Collectors.toList()));
+            } else {
+                LOG.info("Error finding tasks. Returned " + response.code() + " - " + response.errorBody());
+            }
+        } catch (Exception e) {
+            LOG.info("findTasksFor failure with message " + e.getMessage());
+        } finally {
+            return tasks;
         }
     }
 

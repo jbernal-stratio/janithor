@@ -77,4 +77,6 @@ public interface MesosInterface {
             @Field("frameworkId") String frameworkId
     );
 
+    @GET("/master/state")
+    Call<ResponseBody> state();
 }

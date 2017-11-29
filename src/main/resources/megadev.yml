@@ -1,0 +1,13 @@
+masters:
+  - http://master-1.node.paas.labs.stratio.com:5050
+exhibitor:
+  url: http://master-1.node.paas.labs.stratio.com:8181
+  prefix: dcos-service-
+marathon:
+  url: https://megadev.labs.stratio.com/marathon/
+  user: admin
+  pass: 1234
+vault:
+  url: https://10.200.0.29:8200/v1
+  token: 2fc755fe-5fc4-032e-a7a9-6c9ffa828703
+  secrets-path: /mesos
