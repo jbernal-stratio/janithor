@@ -372,14 +372,16 @@ public class Interactive {
 
         int index = 0;
         Optional<List<MesosFramework>> frameworks = mesos.findFrameworks(active);
-        for (MesosFramework fwk : frameworks.get()) {
-            tFrameworks.getTableModel().addRow(
-                    String.valueOf(++index),
-                    fwk.getActive().toString(),
-                    fwk.getId(),
-                    fwk.getName(),
-                    fwk.getRole(),
-                    fwk.getPrincipal());
+        if (frameworks.isPresent()) {
+            for (MesosFramework fwk : frameworks.get()) {
+                tFrameworks.getTableModel().addRow(
+                        String.valueOf(++index),
+                        fwk.getActive().toString(),
+                        fwk.getId(),
+                        fwk.getName(),
+                        fwk.getRole(),
+                        fwk.getPrincipal());
+            }
         }
     }
 

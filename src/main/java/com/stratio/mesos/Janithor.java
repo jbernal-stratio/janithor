@@ -14,16 +14,19 @@ import com.stratio.mesos.api.MarathonApi;
 import com.stratio.mesos.api.MesosApi;
 import org.apache.commons.cli.*;
 
+import java.io.IOException;
+
 /**
  * Created by alonso on 26/06/17.
  */
 public class Janithor {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, InterruptedException {
         CommandLineParser parser;
         CommandLine cmd;
 
         Options options = new Options();
+        options.addOption("i", "interactive", true, "Janithor GUI");
         options.addOption("o", "operation", true, "Operation to perform (lookup, teardown, unreserve, resources, exhibitor, marathon, token)");
         options.addOption("u", "url", true, "Mesos master url");
         options.addOption("p", "principal", true, "Principal");
@@ -41,6 +44,10 @@ public class Janithor {
             cmd = parser.parse(options, args);
             if (cmd.getOptions().length == 0 || cmd.hasOption("h")) {
                 new HelpFormatter().printHelp(Janithor.class.getCanonicalName(), options);
+                return;
+            } else if (cmd.hasOption("i")) {
+                String configPath = cmd.getOptionValue("i");
+                new Interactive().main(new String[]{configPath});
                 return;
             }
 
