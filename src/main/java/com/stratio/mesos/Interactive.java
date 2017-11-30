@@ -153,18 +153,14 @@ public class Interactive {
         mainPanel.addComponent(headerPanel);
         mainPanel.addComponent(frameworksPanel);
 
+        refreshScreen(terminal.getTerminalSize());
+
         /////////////////////////////////////////////////////////////////////////////////////////////////////
         // ACTIONS AND LISTENERS
         /////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // resize panels equally
-        terminal.addResizeListener((terminal1, terminalSize) -> {
-            TerminalSize resourcesSize = new TerminalSize(terminalSize.getColumns(), terminalSize.getRows()/2);
-            TerminalSize frameworksSize = new TerminalSize(terminalSize.getColumns(), terminalSize.getRows()/2);
-
-            pResources.setPreferredSize(resourcesSize);
-            pFrameworks.setPreferredSize(frameworksSize);
-        });
+        terminal.addResizeListener((terminal1, terminalSize) -> refreshScreen(terminalSize));
 
         // show resources action key
         tFrameworks.addKeyStrokeHandler(ExtendedTable.SHOW_RESOURCES_KEY, () -> {
@@ -235,18 +231,6 @@ public class Interactive {
         });
 
         listFrameworksWindow.setComponent(mainPanel);
-
-        // ui refresh thread
-        /*
-        new Thread(() -> {
-            while (appRunning.get()) {
-                pResources.setPreferredSize(pFrameworks.getSize());
-                try {
-                    Thread.sleep(100);
-                } catch (Exception e) {}
-            }
-        }).start();
-        */
         gui.addWindowAndWait(listFrameworksWindow);
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -254,6 +238,14 @@ public class Interactive {
         /////////////////////////////////////////////////////////////////////////////////////////////////////
         appRunning.set(false);
 
+    }
+
+    private static void refreshScreen(TerminalSize terminalSize) {
+        TerminalSize resourcesSize = new TerminalSize(terminalSize.getColumns(), terminalSize.getRows()/2);
+        TerminalSize frameworksSize = new TerminalSize(terminalSize.getColumns(), terminalSize.getRows()/2);
+
+        pResources.setPreferredSize(resourcesSize);
+        pFrameworks.setPreferredSize(frameworksSize);
     }
 
     private static void frameworksRefreshListener(MesosApi mesos, ExtendedTable<String> tFrameworks, ExtendedTable<String> tResources, RadioBoxList<String> radioBoxList) {
@@ -295,8 +287,7 @@ public class Interactive {
             if (mesosSecret==null) {
                 actionListBox.addItem("Unable to obtain secret. Aborted", () -> {});
             } else {
-                actionListBox.addItem("Obtaining DC/OS token for master...", () -> {
-                });
+                actionListBox.addItem("Obtaining DC/OS token for master...", () -> {});
                 String dcosToken = CLI.dcosToken("https://" + masterHost, env.getMarathon().get(USER), env.getMarathon().get(PASS));
                 appendStatus(actionListBox, dcosToken);
 
@@ -306,29 +297,25 @@ public class Interactive {
                 MarathonApi marathonApi = ApiBuilder.build(dcosToken, env.getMarathon().get(URL), MarathonApi.class);
 
                 if (phase == -1 || phase == 1) {
-                    actionListBox.addItem("Tearing down...", () -> {
-                    });
+                    actionListBox.addItem("Tearing down...", () -> {});
                     boolean teardown = mesosApi.teardown(framework.getId());
                     appendStatus(actionListBox, teardown);
                 }
 
                 if (phase == -1 || phase == 2) {
-                    actionListBox.addItem("Unreserving resources...", () -> {
-                    });
+                    actionListBox.addItem("Unreserving resources...", () -> {});
                     List<String> returnCodes = CLI.unreserve(mesosApi, framework.getId(), framework.getRole());
                     appendResources(actionListBox, returnCodes);
                 }
 
                 if (phase == -1 || phase == 3) {
-                    actionListBox.addItem("Cleaning exhibitor up...", () -> {
-                    });
+                    actionListBox.addItem("Cleaning exhibitor up...", () -> {});
                     boolean exhibitor = exhibitorApi.delete(env.getExhibitor().get(PREFIX) + framework.getName());
                     appendStatus(actionListBox, exhibitor);
                 }
 
                 if (phase == -1 || phase == 4) {
-                    actionListBox.addItem("Uninstalling marathon app...", () -> {
-                    });
+                    actionListBox.addItem("Uninstalling marathon app...", () -> {});
                     boolean marathon = marathonApi.destroy(framework.getName());
                     appendStatus(actionListBox, marathon);
                 }
