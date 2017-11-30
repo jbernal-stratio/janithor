@@ -2,7 +2,10 @@
 
 ## 0.4.0 (upcoming)
 
-* Pending changelog
+* New interactive GUI
+* Framework search
+* Resource search
+* Mesos secrets finder
 
 ## 0.3.0 (October 04, 2017)
 
