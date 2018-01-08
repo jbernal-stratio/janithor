@@ -67,6 +67,13 @@ Destroy marathon service
 java -jar janithor.jar -o marathon -u https://megadev.labs.stratio.com/marathon/ -f kafka-sec -t <<TOKEN>>
 ```
 
+## Using GUI
+Run the next command
+```
+java -jar janithor.jar  -i ../src/main/resources/megadev.yml
+```
+
+
 ## Supported authentication methods
 
 Janithor supports Token based, secret based or no authentication at all. To activate each one of them
