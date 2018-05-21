@@ -5,7 +5,7 @@
 * New framework finder by id and name
 * Improved data from framework fetch
 
-## 0.4.0 (upcoming)
+## 0.4.0 (November 30, 2017)
 
 * New interactive GUI
 * Framework search
