@@ -418,6 +418,80 @@ public class MesosApi {
         }
     }
 
+    /**
+     * Returns a list of frameworks by activation status
+     * @param frameworkId framework unique identifier
+     * @return list of frameworks found
+     */
+    public Optional<MesosFramework> findFrameworkById(String frameworkId) {
+        Call<ResponseBody> mesosCall;
+        Optional<MesosFramework> frameworks = Optional.empty();
+
+        try {
+            mesosCall = mesosInterface.state();
+
+            Response<ResponseBody> response = mesosCall.clone().execute();
+            LOG.info("findFrameworks " + response.message());
+            if (response.code() == HTTPUtils.HTTP_OK_CODE) {
+                JsonQuery q = JsonQuery.compile(".frameworks[] | select(.id==\""+frameworkId+"\") | \"\\(.active):\\(.id):\\(.name):\\(.role):\\(.principal)\"");
+                JsonNode in = MAPPER.readTree(new String(response.body().bytes()));
+                List<JsonNode> lstFrameworks = q.apply(in);
+                frameworks = lstFrameworks.stream()
+                        .map(list -> list.toString().replace("\"", ""))
+                        .map(fwk -> new MesosFramework(fwk))
+                        .findFirst();
+            } else {
+                LOG.info("Error finding framework. Returned " + response.code() + " - " + response.errorBody());
+            }
+        } catch (Exception e) {
+            LOG.info("findFramework failure with message " + e.getMessage());
+        } finally {
+            return frameworks;
+        }
+    }
+
+    /**
+     * Returns a list of frameworks by activation status
+     * @param name framework name
+     * @return list of frameworks found
+     */
+    public Optional<MesosFramework> findFrameworkByName(String name, boolean completed) {
+        Call<ResponseBody> mesosCall;
+        Optional<MesosFramework> frameworks = Optional.empty();
+
+        try {
+            mesosCall = mesosInterface.state();
+
+            Response<ResponseBody> response = mesosCall.clone().execute();
+            LOG.info("findFrameworks " + response.message());
+            if (response.code() == HTTPUtils.HTTP_OK_CODE) {
+                if (!completed) {
+                    JsonQuery q = JsonQuery.compile(".frameworks[] | select(.name==\"" + name + "\") | \"\\(.active):\\(.id):\\(.name):\\(.role):\\(.principal)\"");
+                    JsonNode in = MAPPER.readTree(new String(response.body().bytes()));
+                    List<JsonNode> lstFrameworks = q.apply(in);
+                    frameworks = lstFrameworks.stream()
+                        .map(list -> list.toString().replace("\"", ""))
+                        .map(fwk -> new MesosFramework(fwk))
+                        .findFirst();
+                } else {
+                    JsonQuery q = JsonQuery.compile(".completed_frameworks[] | select(.name==\"" + name + "\") | \"\\(.active):\\(.id):\\(.name):\\(.role):\\(.principal)\"");
+                    JsonNode in = MAPPER.readTree(new String(response.body().bytes()));
+                    List<JsonNode> lstFrameworks = q.apply(in);
+                    frameworks = lstFrameworks.stream()
+                        .map(list -> list.toString().replace("\"", ""))
+                        .map(fwk -> new MesosFramework(fwk))
+                        .findFirst();
+                }
+            } else {
+                LOG.info("Error finding framework. Returned " + response.code() + " - " + response.errorBody());
+            }
+        } catch (Exception e) {
+            LOG.info("findFramework failure with message " + e.getMessage());
+        } finally {
+            return frameworks;
+        }
+    }
+
     public Optional<List<MesosTask>> findTasksFor(String frameworkId) {
         Call<ResponseBody> mesosCall;
         Optional<List<MesosTask>> tasks = Optional.empty();
@@ -428,7 +502,7 @@ public class MesosApi {
             Response<ResponseBody> response = mesosCall.clone().execute();
             LOG.info("findTasksFor " + response.message());
             if (response.code() == HTTPUtils.HTTP_OK_CODE) {
-                JsonQuery q = JsonQuery.compile(".frameworks[] | select(.id==\""+frameworkId+"\") | .tasks[] | \"\\(.id):\\(.name):\\(.state):\\(.slave_id)\"");
+                JsonQuery q = JsonQuery.compile(".frameworks[] | select(.id==\""+frameworkId+"\") | .tasks[] | \"\\(.id):\\(.name):\\(.state):\\(.slave_id):\\(.framework_id)\"");
                 JsonNode in = MAPPER.readTree(new String(response.body().bytes()));
                 List<JsonNode> lstFrameworks = q.apply(in);
                 tasks = Optional.of(lstFrameworks.stream()

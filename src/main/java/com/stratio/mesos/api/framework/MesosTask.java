@@ -8,6 +8,7 @@ public class MesosTask {
     private String name;
     private String state;
     private String slaveId;
+    private String frameworkId;
 
     public MesosTask(String literal) {
         String[] split = literal.split(":");
@@ -15,6 +16,7 @@ public class MesosTask {
         this.name = split[1];
         this.state = split[2];
         this.slaveId = split[3];
+        this.frameworkId = split[4];
     }
 
     public MesosTask() {
@@ -59,6 +61,14 @@ public class MesosTask {
         this.slaveId = slaveId;
     }
 
+    public String getFrameworkId() {
+        return frameworkId;
+    }
+
+    public void setFrameworkId(String frameworkId) {
+        this.frameworkId = frameworkId;
+    }
+
     @Override
     public String toString() {
         return "MesosTask{" +
@@ -66,6 +76,7 @@ public class MesosTask {
                 ", name='" + name + '\'' +
                 ", state='" + state + '\'' +
                 ", slaveId='" + slaveId + '\'' +
+                ", frameworkId='" + frameworkId + '\'' +
                 '}';
     }
 }

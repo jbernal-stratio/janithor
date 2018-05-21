@@ -2,7 +2,8 @@
 
 ## 0.5.0 (upcoming)
 
-* Pending changelog
+* New framework finder by id and name
+* Improved data from framework fetch
 
 ## 0.4.0 (upcoming)
 
