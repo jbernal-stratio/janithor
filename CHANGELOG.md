@@ -1,6 +1,10 @@
 # Changelog
 
-## 0.5.0 (upcoming)
+## 0.6.0 (upcoming)
+
+* Pending changelog
+
+## 0.5.0 (May 21, 2018)
 
 * New framework finder by id and name
 * Improved data from framework fetch
