@@ -2,7 +2,7 @@
 
 ## 0.6.0 (upcoming)
 
-* Pending changelog
+* Scheduler IP and port finder
 
 ## 0.5.0 (May 21, 2018)
 

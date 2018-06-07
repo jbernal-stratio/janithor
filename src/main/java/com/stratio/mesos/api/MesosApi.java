@@ -21,14 +21,13 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by alonso on 20/06/17.
@@ -517,6 +516,72 @@ public class MesosApi {
         } finally {
             return tasks;
         }
+    }
+
+    public Optional<String> findSchedulerEndpoint(String name) {
+        Call<ResponseBody> mesosCall;
+        Optional<String> endpoint = Optional.empty();
+
+        try {
+            mesosCall = mesosInterface.state();
+            Response<ResponseBody> response = mesosCall.clone().execute();
+            LOG.info("findSchedulerEndpoint " + response.message());
+            if (response.code() == HTTPUtils.HTTP_OK_CODE) {
+                JsonQuery q = JsonQuery.compile(".frameworks[] | select(.name==\"marathon\") " +
+                    "| .tasks[] | select(.name==\""+name+"\" and .state==\"TASK_RUNNING\") " +
+                    "| {statuses, discovery, labels}");
+                JsonNode in = MAPPER.readTree(new String(response.body().bytes()));
+                List<JsonNode> lstFrameworks = q.apply(in);
+
+                Optional<String> schedulerIp = lstFrameworks.stream()
+                    .flatMap(node -> iteratorToStream(node.at("/statuses").elements(), false))
+                    .filter(node -> "TASK_RUNNING".equals(node.get("state").textValue()))
+                    .map(node -> node.at("/container_status"))
+                    .flatMap(node -> iteratorToStream(node.at("/network_infos").elements(), false))
+                    .map(node -> node.at("/ip_addresses/0/ip_address").textValue())
+                    .findFirst();
+
+                if (schedulerIp.isPresent()) {
+                    String endpointAddress = "";
+                    Optional<String> schedulerScheme = lstFrameworks.stream()
+                        .flatMap(node -> iteratorToStream(node.at("/labels").elements(), false))
+                        .filter(node -> "DCOS_SERVICE_SCHEME".equals(node.get("key").textValue()))
+                        .map(node -> node.get("value").textValue())
+                        .findFirst();
+
+                    if (schedulerScheme.isPresent()) {
+                        endpointAddress = schedulerScheme.get().concat("://");
+                    }
+
+                    endpointAddress = endpointAddress.concat(schedulerIp.get());
+
+                    Optional<Integer> schedulerPort = lstFrameworks.stream()
+                        .flatMap(node -> iteratorToStream(node.at("/discovery/ports/ports").elements(), false))
+                        .filter(node -> "api".equals(node.get("name").textValue()))
+                        .map(node -> node.get("number").intValue())
+                        .findFirst();
+
+                    if (schedulerPort.isPresent()) {
+                        endpointAddress = endpointAddress.concat(":").concat(String.valueOf(schedulerPort.get()));
+                    }
+
+                    endpoint = Optional.of(endpointAddress);
+                }
+
+            } else {
+                LOG.info("Error finding tasks. Returned " + response.code() + " - " + response.errorBody());
+            }
+        } catch (Exception e) {
+            LOG.info("findTasksFor failure with message " + e.getMessage());
+        } finally {
+            return endpoint;
+        }
+    }
+
+
+    public static <T> Stream<T> iteratorToStream(final Iterator<T> iterator, final boolean parallell) {
+        Iterable<T> iterable = () -> iterator;
+        return StreamSupport.stream(iterable.spliterator(), parallell);
     }
 
     private static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor)
