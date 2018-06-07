@@ -2,3 +2,4 @@ rget
 *.log
 .idea
 *.iml
+target/
