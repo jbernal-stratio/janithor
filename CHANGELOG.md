@@ -4,7 +4,7 @@
 
 * Pending changelog
 
-## 0.6.0 (upcoming)
+## 0.6.0 (June 07, 2018)
 
 * Scheduler IP and port finder
 
