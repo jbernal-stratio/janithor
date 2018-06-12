@@ -26,6 +26,7 @@ public class SSOTokenResolver {
     private OkHttpClient clientHttp;
 
     private String baseUrl;
+    private String tenant;
     private String marathonUser;
     private String marathonSecret;
     private String token;
@@ -46,6 +47,22 @@ public class SSOTokenResolver {
         this.clientBuilder.addNetworkInterceptor(this.cookieInterceptor);
         this.clientHttp = clientBuilder.build();
     }
+
+    public SSOTokenResolver(String tenant, String baseUrl, String user, String password) {
+        this.baseUrl = baseUrl;
+        this.tenant = tenant;
+        this.marathonUser = user;
+        this.marathonSecret = password;
+
+        this.redirectionInterceptor = new RedirectionInterceptor();
+        this.cookieInterceptor = new CookieInterceptor();
+        this.clientBuilder = new OkHttpClient.Builder();
+        this.clientBuilder = HTTPUtils.getUnsafeOkHttpClient();
+        this.clientBuilder.addNetworkInterceptor(this.redirectionInterceptor);
+        this.clientBuilder.addNetworkInterceptor(this.cookieInterceptor);
+        this.clientHttp = clientBuilder.build();
+    }
+
 
     /**
      * Performs authentication and returns success or failure
@@ -87,14 +104,17 @@ public class SSOTokenResolver {
 
         String lastRedirection = callBackLocation2;
         try {
-            RequestBody formBody = new FormBody.Builder()
+            FormBody.Builder formBodyBuilder = new FormBody.Builder()
                     .add("lt", bodyParams[0]) // lt
                     .add("_eventId", bodyParams[2]) // event
                     .add("execution", bodyParams[1]) // execution
-                    .add("submit", "LOGIN")
+                    .add("submit", "LOGIN");
+            if (this.tenant != null)
+                formBodyBuilder.add("tenant", this.tenant);
+                formBodyBuilder
                     .add("username", this.marathonUser)
-                    .add("password", this.marathonSecret)
-                    .build();
+                    .add("password", this.marathonSecret);
+            FormBody formBody = formBodyBuilder.build();
 
             Request request = new Request.Builder()
                     .url(lastRedirection)

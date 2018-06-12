@@ -35,6 +35,7 @@ public class Janithor {
         options.addOption("a", true, "Active/inactive frameworks (default true)");
         options.addOption("t", true, "Token based authentication");
         options.addOption("s", true, "Secret based authentication");
+        options.addOption("te", true, "Tenant based authentication");
         options.addOption("sso", true, "Automatic sso authentication (user:pass)");
         options.addOption("x", true, "URL prefix (mesos, master)");
         options.addOption("h", false, "Show help");
@@ -60,6 +61,12 @@ public class Janithor {
             // active/inactive flag for frameworks
             if (cmd.hasOption("a")) {
                 active = Boolean.valueOf(cmd.getOptionValue("a"));
+            }
+
+            // tenant based authentication
+            String tenant = null;
+            if (cmd.hasOption("te")) {
+                tenant = cmd.getOptionValue("te");
             }
 
             // automatic sso authentication
@@ -93,7 +100,10 @@ public class Janithor {
                     CLI.destroy(marathon, serviceName);
                     break;
                 case "token":
-                    CLI.dcosToken(url, sso[0], sso[1]);
+                    if (tenant == null)
+                        CLI.dcosToken(url, sso[0], sso[1]);
+                    else
+                        CLI.dcosToken(url, tenant, sso[0], sso[1]);
                     break;
                 case "dracarys":
                     CLI.unreserve(mesos, role);

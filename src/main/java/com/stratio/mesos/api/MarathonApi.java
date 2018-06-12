@@ -65,12 +65,27 @@ public class MarathonApi {
         return (response.code() == HTTPUtils.HTTP_OK_CODE);
     }
 
+    public static String obtainToken(String tenant, String user, String password, String ssoUrl) {
+        SSOTokenResolver authenticator = new SSOTokenResolver(
+                tenant,
+                ssoUrl,
+                user,
+                password
+        );
+        return obtainTokenCommon(authenticator);
+    }
+
+
     public static String obtainToken(String user, String password, String ssoUrl) {
         SSOTokenResolver authenticator = new SSOTokenResolver(
                 ssoUrl,
                 user,
                 password
         );
+        return obtainTokenCommon(authenticator);
+    }
+
+    private static String obtainTokenCommon(SSOTokenResolver authenticator) {
         boolean authenticated = authenticator.authenticate();
 
         if (authenticated) {

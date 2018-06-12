@@ -8,18 +8,21 @@ There are several operations available
 
 ```
 usage: com.stratio.mesos.Janithor
- -a <arg>               Active/inactive frameworks (default true)
- -f,--framework <arg>   Framework name
- -h                     Show help
- -o,--operation <arg>   Operation to perform (lookup, teardown, unreserve,
-                        resources, exhibitor, marathon, token)
- -p,--principal <arg>   Principal
- -r,--role <arg>        Role
- -s <arg>               Secret based authentication
- -sso <arg>             Automatic sso authentication (user:pass)
- -t <arg>               Token based authentication
- -u,--url <arg>         Mesos master url
- -x <arg>               URL prefix (mesos, master)
+ -a <arg>                 Active/inactive frameworks (default true)
+ -f,--framework <arg>     Framework name
+ -h                       Show help
+ -i,--interactive <arg>   Janithor GUI
+ -o,--operation <arg>     Operation to perform (lookup, teardown,
+                          unreserve, resources, exhibitor, marathon,
+                          token)
+ -p,--principal <arg>     Principal
+ -r,--role <arg>          Role
+ -s <arg>                 Secret based authentication
+ -sso <arg>               Automatic sso authentication (user:pass)
+ -t <arg>                 Token based authentication
+ -te <arg>                Tenant based authentication
+ -u,--url <arg>           Mesos master url
+ -x <arg>                 URL prefix (mesos, master)
 ```
 
 The active flags allows to filter only ACTIVE frameworks. If set to false it will only look for inactive ones

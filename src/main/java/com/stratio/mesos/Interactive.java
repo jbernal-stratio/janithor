@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class Interactive {
     public static final String URL = "url";
+    public static final String TENANT = "tenant";
     public static final String USER = "user";
     public static final String PASS = "pass";
     public static final String TOKEN = "token";
@@ -288,7 +289,8 @@ public class Interactive {
                 actionListBox.addItem("Unable to obtain secret. Aborted", () -> {});
             } else {
                 actionListBox.addItem("Obtaining DC/OS token for master...", () -> {});
-                String dcosToken = CLI.dcosToken("https://" + masterHost, env.getMarathon().get(USER), env.getMarathon().get(PASS));
+                String tenant = env.getMarathon().get(USER);
+                String dcosToken = (tenant==null)?CLI.dcosToken("https://" + masterHost, env.getMarathon().get(USER), env.getMarathon().get(PASS)):CLI.dcosToken("https://" + masterHost, tenant, env.getMarathon().get(USER), env.getMarathon().get(PASS));
                 appendStatus(actionListBox, dcosToken);
 
                 String[] credentials = mesosSecret.split(":");

@@ -132,6 +132,12 @@ public class CLI {
         return token;
     }
 
+    public static String dcosToken(String url, String tenant, String user, String pass) {
+        String token = MarathonApi.obtainToken(tenant, user, pass, url + "/login?firstUser=false");
+        println(token);
+        return token;
+    }
+
     public static String findMesosSecret(String vaultUrl, String vaultToken) {
         ObjectMapper MAPPER = new ObjectMapper();
 
