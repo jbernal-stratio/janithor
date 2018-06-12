@@ -4,6 +4,12 @@ The aim of this project is to provide an easy interface to interact with mesos t
 
 ## Using the CLI
 
+unzip de janithor-<version>-assembly.zip and get into the folder janithor-<version>. i.e:
+```
+unzip janithor-0.7.0-SNAPSHOT-assembly.zip
+cd janithor-0.7.0-SNAPSHOT/
+```
+
 There are several operations available
 
 ```
@@ -27,50 +33,50 @@ The active flags allows to filter only ACTIVE frameworks. If set to false it wil
 
 Obtain token from mesos master
 ```
-java -jar janithor.jar -o token -u https://leader.mesos/login?firstUser=false -sso admin:1234
+./janithor.sh -o token -u https://leader.mesos/login?firstUser=false -sso admin:1234
 ```
 
 Find framework ids
 ```
-java -jar janithor.jar -o lookup -u http://leader.mesos:5050 -p kafka-principal -r kafka-sec-role -f kafka-sec -t <<TOKEN>>
+./janithor.sh -o lookup -u http://leader.mesos:5050 -p kafka-principal -r kafka-sec-role -f kafka-sec -t <<TOKEN>>
 ```
 
 List resources for an active framework
 ```
-java -jar janithor.jar -o resources -u http://leader.mesos:5050 -p kafka-principal -r kafka-sec-role -f kafka-sec -t <<TOKEN>>
+./janithor.sh -o resources -u http://leader.mesos:5050 -p kafka-principal -r kafka-sec-role -f kafka-sec -t <<TOKEN>>
 ```
 
 Teardown an active framework
 ```
-java -jar janithor.jar -o teardown -u http://leader.mesos:5050 -p kafka-principal -r kafka-sec-role -f kafka-sec -t <<TOKEN>> 
+./janithor.sh -o teardown -u http://leader.mesos:5050 -p kafka-principal -r kafka-sec-role -f kafka-sec -t <<TOKEN>> 
 ```
 
 Unreserve resources for an inactive framework
 ```
-java -jar janithor.jar -o unreserve -u http://leader.mesos:5050 -p kafka-principal -r kafka-sec-role -f kafka-sec -a false -t <<TOKEN>> 
+./janithor.sh -o unreserve -u http://leader.mesos:5050 -p kafka-principal -r kafka-sec-role -f kafka-sec -a false -t <<TOKEN>> 
 ```
 
 Unreserve all resources just by role (use with caution)
 ```
-java -jar janithor.jar -o dracarys -u http://leader.mesos:5050 -p kafka-principal -r kafka-sec-role -t <<TOKEN>>
+./janithor.sh -o dracarys -u http://leader.mesos:5050 -p kafka-principal -r kafka-sec-role -t <<TOKEN>>
  
 ```
 
 Remove exhibitor service entry
 ```
-java -jar janithor.jar -o exhibitor -u https://sso.paas.labs.stratio.com -p kafka-principal -f dcos-service-kafka-sec -t <<TOKEN>>
+./janithor.sh -o exhibitor -u https://sso.paas.labs.stratio.com -p kafka-principal -f dcos-service-kafka-sec -t <<TOKEN>>
 ```
 > Note that the name of the service in exhibitor is slightly different from the registered framework in some cases
 
 Destroy marathon service
 ```
-java -jar janithor.jar -o marathon -u https://megadev.labs.stratio.com/marathon/ -f kafka-sec -t <<TOKEN>>
+./janithor.sh -o marathon -u https://megadev.labs.stratio.com/marathon/ -f kafka-sec -t <<TOKEN>>
 ```
 
 ## Using GUI
 Run the next command
 ```
-java -jar janithor.jar  -i ../src/main/resources/megadev.yml
+./janithor.sh  -i ../src/main/resources/megadev.yml
 ```
 
 
