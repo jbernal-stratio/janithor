@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.0 (upcoming)
+
+* Pending changelog
+
 ## 0.7.0 (upcoming)
 
 * [FRAM-1442] Janithor adjustment to SSO-tenant
