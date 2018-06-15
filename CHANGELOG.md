@@ -4,7 +4,7 @@
 
 * Pending changelog
 
-## 0.7.0 (upcoming)
+## 0.7.0 (June 15, 2018)
 
 * [FRAM-1442] Janithor adjustment to SSO-tenant
 
