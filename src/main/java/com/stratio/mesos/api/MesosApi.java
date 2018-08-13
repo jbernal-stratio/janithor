@@ -285,6 +285,65 @@ public class MesosApi {
     }
 
     /**
+     * Finds any frameworkId that matches the given serviceName.
+     * By default, it will only look for active frameworks
+     * @param serviceName mesos service name
+     * @return An optional list of framework ids
+     */
+    public Optional<String[]> findFrameworkId(String serviceName) {
+        return findFrameworkId(serviceName, true);
+    }
+
+    /**
+     * Finds any frameworkId that matches the given serviceName and activation status
+     * @param serviceName mesos service name
+     * @param active filter by active/inactive frameworks
+     * @return An optional list of framework ids
+     */
+    public Optional<String[]> findFrameworkId(String serviceName, boolean active) {
+        Call<ResponseBody> mesosCall;
+        Optional<String[]> frameworkId = Optional.empty();
+
+        try {
+            if (!hasEndpointPrefix()) mesosCall = mesosInterface.findFrameworks();
+            else mesosCall = mesosInterface.findFrameworks(getEndpointsPrefix());
+
+            Response<ResponseBody> response = mesosCall.clone().execute();
+            LOG.info("findFrameworkId " + response.message());
+            if (response.code() == HTTPUtils.HTTP_OK_CODE) {
+                String includeInactives = active?" and .active==true":" and .active==false";
+                JsonQuery q = JsonQuery.compile(".frameworks[]|select(.name == \"" + serviceName + "\"" +includeInactives+").id");
+                JsonNode in = MAPPER.readTree(new String(response.body().bytes()));
+                List<JsonNode> json = q.apply(in);
+
+                // might be a completed framework
+                if (json.isEmpty()) {
+                    q = JsonQuery.compile(".completed_frameworks[]|select(.name == \"" + serviceName + "\").id");
+                    json = q.apply(in);
+                }
+
+                if (json.size()>0) {
+                    frameworkId = Optional.of(json.stream()
+                            .map(fwId -> fwId.toString().replace("\"", ""))
+                            .toArray(String[]::new)
+                    );
+                } else if (json.size()==0) {
+                    LOG.error("No frameworks found for (" + serviceName + ")");
+                } else {
+                    LOG.error("Several frameworks found for the same (" + serviceName + ")");
+                }
+            } else {
+                LOG.info("Error finding framework ("+serviceName+"): " + response
+                        .code() + " and message: " + response.errorBody());
+            }
+        } catch (Exception e) {
+            LOG.info("findFrameworkId failure with message " + e.getMessage());
+        } finally {
+            return frameworkId;
+        }
+    }
+
+    /**
      * Returns the list of mesos slaves where the specified framework is found
      * @param frameworkId framework to locate inside the mesos slaves
      * @return Optional list of slaveIds
