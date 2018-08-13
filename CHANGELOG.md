@@ -2,7 +2,7 @@
 
 ## 0.8.0 (upcoming)
 
-* Pending changelog
+* [FRAM-1731] added method findFrameworkId by serviceName
 
 ## 0.7.0 (June 15, 2018)
 
