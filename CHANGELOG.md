@@ -3,6 +3,7 @@
 ## 0.8.0 (upcoming)
 
 * [FRAM-1731] added method findFrameworkId by serviceName
+* [FRAM-1429] Janithor Packaging Reviewed (added single jar with classifier)
 
 ## 0.7.0 (June 15, 2018)
 
